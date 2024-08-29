@@ -1,9 +1,11 @@
 const express = require("express");
 const fileUpload = require('express-fileupload');
 const router = require('./Routes/fileUpload');
+// const cloudinaryConnect = ;
 
 require("dotenv").config();
 require("./Config/database").connect;
+require('./Config/cloudinary').cloudinaryConnect();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
