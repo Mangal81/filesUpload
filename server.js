@@ -4,7 +4,7 @@ const router = require('./Routes/fileUpload');
 // const cloudinaryConnect = ;
 
 require("dotenv").config();
-require("./Config/database").connect;
+require("./Config/database").connect();
 require('./Config/cloudinary').cloudinaryConnect();
 
 const app = express();
