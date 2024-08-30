@@ -34,11 +34,14 @@ function validateFileType(fileType, supportedType){
 async function uploadToCloudinary(file, folder){
 
 	const option = {
-		folder
+		folder,	
+		resource_type:"auto"
 	}
 	return await cloudinary.uploader.upload(file.tempFilePath, option);
 } 
 
+
+//image uploading
 exports.imageFileUpload = async (request, response) => {
 	try {
 		const file = request.files.imageFile;
@@ -67,12 +70,55 @@ exports.imageFileUpload = async (request, response) => {
 
 		const result = await fileModel.create({name, email, tag, url:uploadResult.secure_url});
 
-		console.log(uploadResult);
+		// console.log(uploadResult);
 		response.status(200).json({
 			success:true,
 			result:uploadResult,
 			data:result,
 			message:"File uploaded"
+		})
+
+	} 
+	catch (error) {
+		console.log(error);
+	}
+}
+
+//video uploading
+exports.videoFileUpload = async (request, response) => {
+	try {
+		const file = request.files.videoFile;
+		const {name, email, tag} = request.body;
+		//console.log("file : ",file);
+
+		//validate file
+		const supportedType = ["mp4", "mov", "mkv"];
+		const fileType = file.name.split(".")[1];
+		if(!validateFileType(fileType, supportedType)){
+			return response.status(500).json({
+				success:false,
+				message:"File formate not supported"
+			})
+		}
+		
+		console.log("Please wait... ")
+		// calling funtion to upload file on cloudinary
+		const uploadResult = await uploadToCloudinary(file, "Files");
+		if(!uploadResult){
+			return response.status(500).json({
+				success:false,
+				message:"Unable to upload"
+			})
+		}
+
+		const result = await fileModel.create({name, email, tag, url:uploadResult.secure_url});
+
+		console.log(uploadResult);
+		response.status(200).json({
+			success:true,
+			result:uploadResult,
+			data:result,
+			message:"Video file uploaded"
 		})
 
 	} 
